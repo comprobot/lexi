@@ -2,6 +2,8 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { TRPCClientErrorLike } from "@trpc/client";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,60 +11,54 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { registerSchema } from "@/modules/auth/schemas";
+import { loginSchema } from "@/modules/auth/schemas";
 import z from "zod";
 import Link from "next/link";
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
+//import { useTRPC } from "@/trpc/client";
 import { useRouter } from "next/navigation";
+import { useTRPC } from "@/trpc/client";
+import { toast } from "sonner";
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["700"],
 });
 
-export const SignUpView = () => {
+export const SignInView = () => {
   const router = useRouter();
-
   const trpc = useTRPC();
-  const { mutate: register, isPending } = useMutation(
-    trpc.auth.register.mutationOptions({
-      onError: (error) => {
+  const queryClient = useQueryClient();
+  const { mutate: login, isPending } = useMutation(
+    trpc.auth.login.mutationOptions({
+      onError: (error: TRPCClientErrorLike<any>) => {
         toast.error(error.message);
       },
-      onSuccess: () => {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
         router.push("/");
       },
     })
   );
 
-  const form = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     mode: "all",
     defaultValues: {
       email: "",
       password: "",
-      username: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof registerSchema>) => {
-    register(values);
+  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+    login(values);
   };
-
-  const username = form.watch("username");
-  const usernameErrors = form.formState.errors.username;
-
-  const showPreview = username && !usernameErrors;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5">
@@ -82,33 +78,12 @@ export const SignUpView = () => {
                 size="sm"
                 className="text-base border-none underline"
               >
-                <Link prefetch href="/sign-in">
-                  Sign in
+                <Link prefetch href="/sign-up">
+                  Sign up
                 </Link>
               </Button>
             </div>
-            <h1 className="text-4xl font-medium">
-              Join over 1,500 creators and book sellers earning money on Lexi.
-            </h1>
-            <FormField
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base">Username</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormDescription
-                    className={cn("hidden", showPreview && "block")}
-                  >
-                    Your book shop will be available at&nbsp;
-                    {/* TODO: Use proper method to generate preview url */}
-                    <strong>{username}</strong>.shop.com
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <h1 className="text-4xl font-medium">Welcome back to Lexi.</h1>
             <FormField
               name="email"
               render={({ field }) => (
@@ -140,7 +115,7 @@ export const SignUpView = () => {
               variant="elevated"
               className="bg-black text-white hover:bg-pink-400 hover:text-primary"
             >
-              Create account
+              Log in
             </Button>
           </form>
         </Form>
