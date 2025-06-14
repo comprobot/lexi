@@ -73,6 +73,7 @@ export const Categories = ({ data }: Props) => {
         className="absolute opacity-0 pointer-events-none flex"
         style={{ position: "fixed", top: -9999, left: -9999 }}
       >
+        {/* TODO: Hardcode "All" button */}
         {data.map((category) => (
           <div key={category.id}>
             <CategoryDropdown

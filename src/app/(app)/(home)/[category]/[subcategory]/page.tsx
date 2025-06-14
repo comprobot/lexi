@@ -1,18 +1,33 @@
+import {
+  BookList,
+  BookListSkeleton,
+} from "@/modules/books/ui/components/book-list";
+import { getQueryClient, trpc } from "@/trpc/server";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { Suspense } from "react";
+
 interface Props {
   params: Promise<{
-    category: string;
     subcategory: string;
   }>;
 }
 
 const Page = async ({ params }: Props) => {
-  const { category, subcategory } = await params;
+  const { subcategory } = await params;
+
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(
+    trpc.books.getMany.queryOptions({
+      category: subcategory,
+    })
+  );
 
   return (
-    <div>
-      Category: {category} <br />
-      Subcategory: {subcategory}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={<BookListSkeleton />}>
+        <BookList category={subcategory} />
+      </Suspense>
+    </HydrationBoundary>
   );
 };
 

@@ -1,0 +1,66 @@
+import { baseProcedure, createTRPCRouter } from "@/trpc/init";
+import z from "zod";
+import type { Where } from "payload";
+import { Category } from "@/payload-types";
+
+export const booksRouter = createTRPCRouter({
+  getMany: baseProcedure
+    .input(
+      z.object({
+        category: z.string().nullable().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const where: Where = {};
+
+      if (input.category) {
+        const categoriesData = await ctx.db.find({
+          collection: "categories",
+          limit: 1,
+          depth: 1, // Populate subcategories, subcategories[0] will be a type of "Category"
+          pagination: false,
+          where: {
+            slug: {
+              equals: input.category,
+            },
+          },
+        });
+
+        console.log(JSON.stringify(categoriesData), null, 2);
+        const formattedData = categoriesData.docs.map((doc) => ({
+          ...doc,
+          subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
+            // Because of "depth: 1" we are confident "doc" will be a type of "Category"
+            ...(doc as Category),
+            subcategories: undefined,
+          })),
+        }));
+
+        const subcategoriesSlugs = [];
+        const parentCategory = formattedData[0];
+
+        if (parentCategory) {
+          subcategoriesSlugs.push(
+            ...parentCategory.subcategories.map(
+              (subcategory) => subcategory.slug
+            )
+          );
+        }
+
+        where["category.slug"] = {
+          in: [parentCategory.slug, ...subcategoriesSlugs],
+        };
+      }
+
+      const data = await ctx.db.find({
+        collection: "books",
+        depth: 1, // Populate "category" & "image"
+        where,
+      });
+
+      // Artificial delay for development/testing
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      return data;
+    }),
+});
