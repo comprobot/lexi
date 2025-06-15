@@ -16,12 +16,14 @@ export const booksRouter = createTRPCRouter({
       const where: Where = {};
       if (input.minPrice) {
         where.price = {
+          ...where.price,
           greater_than_equal: input.minPrice,
         };
       }
 
       if (input.maxPrice) {
         where.price = {
+          ...where.price,
           less_than_equal: input.maxPrice,
         };
       }
