@@ -1,8 +1,15 @@
 "use client";
 
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useSuspenseInfiniteQuery,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useBookFilters } from "../../hooks/use-book-filters";
+import { BookCard, BookCardSkeleton } from "./book-card";
+import { DEFAULT_LIMIT } from "@/constants";
+import { Button } from "@/components/ui/button";
+import { InboxIcon } from "lucide-react";
 
 interface Props {
   category?: string;
@@ -11,25 +18,72 @@ interface Props {
 export const BookList = ({ category }: Props) => {
   const [filters] = useBookFilters();
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(
-    trpc.books.getMany.queryOptions({
-      category,
-      ...filters,
-    })
-  );
+  const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useSuspenseInfiniteQuery(
+      trpc.books.getMany.infiniteQueryOptions(
+        {
+          ...filters,
+          category,
+          limit: DEFAULT_LIMIT,
+        },
+        {
+          getNextPageParam: (lastPage) => {
+            return lastPage.docs.length > 0 ? lastPage.nextPage : undefined;
+          },
+        }
+      )
+    );
+
+  if (data.pages?.[0]?.docs.length === 0) {
+    return (
+      <div className="border border-black border-dashed flex items-center justify-center p-8 flex-col gap-y-4 bg-white w-full rounded-lg">
+        <InboxIcon />
+        <p className="text-base font-medium">No books found</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-      {data?.docs.map((book) => (
-        <div key={book.id} className="border rounded-md bg-white p-4">
-          <h2 className="text-xl font-medium">{book.name}</h2>
-          <p>${book.price}</p>
-        </div>
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+        {data?.pages
+          .flatMap((page) => page.docs)
+          .map((book) => (
+            <BookCard
+              key={book.id}
+              id={book.id}
+              name={book.name}
+              imageUrl={book.image?.url}
+              authorUsername="hien"
+              authorImageUrl={undefined}
+              reviewRating={3}
+              reviewCount={5}
+              price={book.price}
+            />
+          ))}
+      </div>
+      <div className="flex justify-center pt-8">
+        {hasNextPage && (
+          <Button
+            disabled={isFetchingNextPage}
+            onClick={() => fetchNextPage()}
+            className="font-medium disabled:opacity-50 text-base bg-white"
+            variant="elevated"
+          >
+            Load more
+          </Button>
+        )}
+      </div>
+    </>
   );
 };
 
 export const BookListSkeleton = () => {
-  return <div>Loading...</div>;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+      {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
+        <BookCardSkeleton key={index} />
+      ))}
+    </div>
+  );
 };
