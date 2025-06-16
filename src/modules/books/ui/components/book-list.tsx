@@ -2,16 +2,19 @@
 
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useBookFilters } from "../../hooks/use-book-filters";
 
 interface Props {
   category?: string;
 }
 
 export const BookList = ({ category }: Props) => {
+  const [filters] = useBookFilters();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
     trpc.books.getMany.queryOptions({
       category,
+      ...filters,
     })
   );
 
