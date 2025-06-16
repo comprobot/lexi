@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     categories: Category;
     books: Book;
+    tags: Tag;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -85,6 +86,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     books: BooksSelect<false> | BooksSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -190,8 +192,20 @@ export interface Book {
    */
   price: number;
   category?: (string | null) | Category;
+  tags?: (string | Tag)[] | null;
   image?: (string | null) | Media;
   refundPolicy?: ('30-day' | '14-day' | '7-day' | '3-day' | '1-day' | 'no-refunds') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: string;
+  name: string;
+  books?: (string | Book)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -217,6 +231,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'books';
         value: string | Book;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: string | Tag;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -317,8 +335,19 @@ export interface BooksSelect<T extends boolean = true> {
   description?: T;
   price?: T;
   category?: T;
+  tags?: T;
   image?: T;
   refundPolicy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T;
+  books?: T;
   updatedAt?: T;
   createdAt?: T;
 }

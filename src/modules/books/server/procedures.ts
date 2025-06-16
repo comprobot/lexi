@@ -1,7 +1,8 @@
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import z from "zod";
-import type { Where } from "payload";
+import type { Where, Sort } from "payload";
 import { Category } from "@/payload-types";
+import { sortValues } from "../search-params";
 
 export const booksRouter = createTRPCRouter({
   getMany: baseProcedure
@@ -10,6 +11,8 @@ export const booksRouter = createTRPCRouter({
         category: z.string().nullable().optional(),
         minPrice: z.string().nullable().optional(),
         maxPrice: z.string().nullable().optional(),
+        tags: z.array(z.string()).nullable().optional(),
+        sort: z.enum(sortValues).nullable().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -71,10 +74,26 @@ export const booksRouter = createTRPCRouter({
         }
       }
 
+      if (input.tags && input.tags.length > 0) {
+        where["tags.name"] = {
+          in: input.tags,
+        };
+      }
+
+      let sort: Sort = "-createdAt";
+      if (input.sort === "curated") {
+        sort = "-createdAt";
+      } else if (input.sort === "hot_and_new") {
+        sort = "-createdAt";
+      } else if (input.sort === "trending") {
+        sort = "+createdAt";
+      }
+
       const data = await ctx.db.find({
         collection: "books",
         depth: 1, // Populate "category" & "image"
         where,
+        sort,
       });
 
       // Artificial delay for development/testing
