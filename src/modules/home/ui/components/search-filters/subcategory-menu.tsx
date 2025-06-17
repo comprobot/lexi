@@ -5,10 +5,9 @@ import Link from "next/link";
 interface Props {
   category: CategoriesGetManyOutput[1];
   isOpen: boolean;
-  position: { top: number; left: number };
 }
 
-export const SubcategoryMenu = ({ category, isOpen, position }: Props) => {
+export const SubcategoryMenu = ({ category, isOpen }: Props) => {
   if (
     !isOpen ||
     !category.subcategories ||
@@ -20,12 +19,10 @@ export const SubcategoryMenu = ({ category, isOpen, position }: Props) => {
   const backgroundColor = category.color || "#F5F5F5";
   return (
     <div
-      className="absolute z-[100]"
+      className="absolute z-100"
       style={{
-        top: "calc(100% + 8px)", // Position below the button with 8px gap
-        left: "50%",
-        transform: "translateX(-50%)", // Center horizontally
-        minWidth: "200px",
+        top: "100%",
+        left: 0,
       }}
     >
       {/* Invisible bridge to maintain hover */}
