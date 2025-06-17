@@ -1,3 +1,4 @@
+import { DEFAULT_LIMIT } from "@/constants";
 import { loadBookFilters } from "@/modules/books/search-params";
 import { BookListView } from "@/modules/books/ui/views/book-list-view";
 import { getQueryClient, trpc } from "@/trpc/server";
@@ -16,10 +17,11 @@ const Page = async ({ params, searchParams }: Props) => {
   const filters = await loadBookFilters(searchParams);
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(
-    trpc.books.getMany.queryOptions({
-      category: subcategory,
+  void queryClient.prefetchInfiniteQuery(
+    trpc.books.getMany.infiniteQueryOptions({
       ...filters,
+      category: subcategory,
+      limit: DEFAULT_LIMIT,
     })
   );
 

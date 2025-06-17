@@ -4,6 +4,7 @@ import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import type { SearchParams } from "nuqs/server";
 import { loadBookFilters } from "@/modules/books/search-params";
 import { BookListView } from "@/modules/books/ui/views/book-list-view";
+import { DEFAULT_LIMIT } from "@/constants";
 
 interface Props {
   params: Promise<{
@@ -17,10 +18,11 @@ const Page = async ({ params, searchParams }: Props) => {
   const filters = await loadBookFilters(searchParams);
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(
-    trpc.books.getMany.queryOptions({
-      category,
+  void queryClient.prefetchInfiniteQuery(
+    trpc.books.getMany.infiniteQueryOptions({
       ...filters,
+      category,
+      limit: DEFAULT_LIMIT,
     })
   );
 

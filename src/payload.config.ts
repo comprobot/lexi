@@ -13,6 +13,8 @@ import { Media } from "./collections/Media";
 import { Categories } from "./collections/Categories";
 import { Books } from "./collections/Books";
 import { Tags } from "./collections/Tabs";
+import { Tenants } from "./collections/Tenants";
+import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -24,7 +26,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories, Books, Tags],
+  collections: [Users, Media, Categories, Books, Tags, Tenants],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
@@ -36,6 +38,16 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
+    multiTenantPlugin({
+      collections: {
+        books: {},
+      },
+      tenantsArrayField: {
+        includeDefaultField: false,
+      },
+      userHasAccessToAllTenants: (user) =>
+        Boolean(user?.roles?.includes("super-admin")),
+    }),
     // storage-adapter-placeholder
   ],
 });
