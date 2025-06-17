@@ -10,12 +10,15 @@ import { BookCard, BookCardSkeleton } from "./book-card";
 import { DEFAULT_LIMIT } from "@/constants";
 import { Button } from "@/components/ui/button";
 import { InboxIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Props {
   category?: string;
+  tenantSlug?: string;
+  narrowView?: boolean;
 }
 
-export const BookList = ({ category }: Props) => {
+export const BookList = ({ category, tenantSlug, narrowView }: Props) => {
   const [filters] = useBookFilters();
   const trpc = useTRPC();
   const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
@@ -24,6 +27,7 @@ export const BookList = ({ category }: Props) => {
         {
           ...filters,
           category,
+          tenantSlug,
           limit: DEFAULT_LIMIT,
         },
         {
@@ -45,7 +49,12 @@ export const BookList = ({ category }: Props) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+      <div
+        className={cn(
+          "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4",
+          narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3"
+        )}
+      >
         {data?.pages
           .flatMap((page) => page.docs)
           .map((book) => (
@@ -54,8 +63,8 @@ export const BookList = ({ category }: Props) => {
               id={book.id}
               name={book.name}
               imageUrl={book.image?.url}
-              authorUsername="hien"
-              authorImageUrl={undefined}
+              tenantSlug={book.tenant?.slug}
+              tenantImageUrl={book.tenant?.image?.url}
               reviewRating={3}
               reviewCount={5}
               price={book.price}
@@ -78,9 +87,14 @@ export const BookList = ({ category }: Props) => {
   );
 };
 
-export const BookListSkeleton = () => {
+export const BookListSkeleton = ({ narrowView }: Props) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+    <div
+      className={cn(
+        "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4",
+        narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3"
+      )}
+    >
       {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
         <BookCardSkeleton key={index} />
       ))}

@@ -5,9 +5,11 @@ import { BookSort } from "../components/book-sort";
 
 interface Props {
   category?: string;
+  tenantSlug?: string;
+  narrowView?: boolean;
 }
 
-export const BookListView = ({ category }: Props) => {
+export const BookListView = ({ category, tenantSlug, narrowView }: Props) => {
   return (
     <div className="px-4 lg:px-12 py-8 flex flex-col gap-4">
       <div className="flex flex-col lg:flex-row lg:items-center gap-y-2 lg:gap-y-0 justify-between">
@@ -20,8 +22,12 @@ export const BookListView = ({ category }: Props) => {
           <BookFilters />
         </div>
         <div className="lg:col-span-4 xl:col-span-6">
-          <Suspense fallback={<BookListSkeleton />}>
-            <BookList category={category} />
+          <Suspense fallback={<BookListSkeleton narrowView={narrowView} />}>
+            <BookList
+              category={category}
+              tenantSlug={tenantSlug}
+              narrowView={narrowView}
+            />
           </Suspense>
         </div>
       </div>
