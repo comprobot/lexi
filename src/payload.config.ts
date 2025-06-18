@@ -15,6 +15,7 @@ import { Books } from "./collections/Books";
 import { Tags } from "./collections/Tabs";
 import { Tenants } from "./collections/Tenants";
 import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
+import { Config } from "./payload-types";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -38,7 +39,7 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
-    multiTenantPlugin({
+    multiTenantPlugin<Config>({
       collections: {
         books: {},
       },

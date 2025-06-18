@@ -6,6 +6,25 @@ import { sortValues } from "../search-params";
 import { DEFAULT_LIMIT } from "@/constants";
 
 export const booksRouter = createTRPCRouter({
+  getOne: baseProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const book = await ctx.db.findByID({
+        collection: "books",
+        id: input.id,
+        depth: 2,
+      });
+
+      return {
+        ...book,
+        image: book.image as Media | null,
+        tenant: book.tenant as Tenant & { image: Media | null },
+      };
+    }),
   getMany: baseProcedure
     .input(
       z.object({
