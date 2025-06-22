@@ -10,7 +10,6 @@ interface CheckoutItemProps {
   bookUrl: string;
   tenantUrl: string;
   tenantName: string;
-  id: string;
   price: number;
   onRemove: () => void;
 }
@@ -22,7 +21,6 @@ export const CheckoutItem = ({
   bookUrl,
   tenantUrl,
   tenantName,
-  id,
   price,
   onRemove,
 }: CheckoutItemProps) => {
