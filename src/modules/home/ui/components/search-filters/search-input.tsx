@@ -2,7 +2,6 @@
 
 import { Input } from "@/components/ui/input";
 import { BookmarkCheckIcon, ListFilterIcon, SearchIcon } from "lucide-react";
-import { CustomCategory } from "../types";
 import { CategoriesSidebar } from "./categories-sidebar";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,6 @@ import Link from "next/link";
 
 interface Props {
   disabled?: boolean;
-  data: CustomCategory[];
 }
 
 export const SearchInput = ({ disabled, data }: Props) => {
@@ -42,7 +40,7 @@ export const SearchInput = ({ disabled, data }: Props) => {
       {/* Add library button */}
       {session.data?.user && (
         <Button asChild variant="elevated">
-          <Link href="/library">
+          <Link prefetch href="/library">
             <BookmarkCheckIcon />
             Library
           </Link>

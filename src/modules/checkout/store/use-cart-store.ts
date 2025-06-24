@@ -11,7 +11,6 @@ interface CartState {
   removeBook: (tenantSlug: string, bookId: string) => void;
   clearCart: (tenantSlug: string) => void;
   clearAllCarts: () => void;
-  getCartByTenant: (tenantSlug: string) => string[];
 }
 
 export const useCartStore = create<CartState>()(
@@ -56,9 +55,6 @@ export const useCartStore = create<CartState>()(
         set({
           tenantCarts: {},
         }),
-
-      getCartByTenant: (tenantSlug) =>
-        get().tenantCarts[tenantSlug]?.bookIds || [],
     }),
     {
       name: "lexi-cart",
