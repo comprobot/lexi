@@ -11,6 +11,55 @@ import type { Media, Tenant } from "@/payload-types";
 import { DEFAULT_LIMIT } from "@/constants";
 
 export const libraryRouter = createTRPCRouter({
+  getOne: protectedProcedure
+    .input(
+      z.object({
+        bookId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const ordersData = await ctx.db.find({
+        collection: "orders",
+        limit: 1,
+        pagination: false,
+        where: {
+          and: [
+            {
+              book: {
+                equals: input.bookId,
+              },
+            },
+            {
+              user: {
+                equals: ctx.session.user.id,
+              },
+            },
+          ],
+        },
+      });
+      const order = ordersData.docs[0];
+
+      if (!order) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Order not found",
+        });
+      }
+
+      const book = await ctx.db.findByID({
+        collection: "books",
+        id: input.bookId,
+      });
+
+      if (!book) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Book not found",
+        });
+      }
+
+      return book;
+    }),
   getMany: protectedProcedure
     .input(
       z.object({
