@@ -20,7 +20,10 @@ export const booksRouter = createTRPCRouter({
       const book = await ctx.db.findByID({
         collection: "books",
         id: input.id,
-        depth: 2,
+        depth: 2, // Load book.image, book.tenant and book.tenant.image
+        select: {
+          content: false,
+        },
       });
 
       let isPurchased = false;
@@ -206,6 +209,9 @@ export const booksRouter = createTRPCRouter({
         sort,
         page: input.cursor,
         limit: input.limit,
+        select: {
+          content: false,
+        },
       });
 
       const dataWithSummarizedReviews = await Promise.all(
