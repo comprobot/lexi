@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency, generateTenantURL } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { CheckCheckIcon, CheckIcon, LinkIcon, StarIcon } from "lucide-react";
+import { CheckIcon, LinkIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";
+ß;
 //import { CartButton } from "../components/cart-button";
-import dynamic from "next/dynamic";
 import { Progress } from "@/components/ui/progress";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
 
 const CartButton = dynamic(
