@@ -14,6 +14,7 @@ export const Books: CollectionConfig = {
   },
   admin: {
     useAsTitle: "name",
+    description: "You must verify your account before creating books",
   },
   fields: [
     {

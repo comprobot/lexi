@@ -29,7 +29,10 @@ export async function POST(req: Request) {
   }
   console.log("✅ Success:", event.id);
 
-  const permittedEvents: string[] = ["permit", "checkout.session.completed"];
+  const permittedEvents: string[] = [
+    "checkout.session.completed",
+    "account.updated",
+  ];
 
   const payload = await getPayload({ config });
 
@@ -39,6 +42,11 @@ export async function POST(req: Request) {
       switch (event.type) {
         case "checkout.session.completed":
           data = event.data.object as Stripe.Checkout.Session;
+
+          console.log("ACCOUNT: ", {
+            account: event.account,
+          });
+
           if (!data.metadata?.userId) {
             throw new Error("User ID is required");
           }
@@ -56,6 +64,9 @@ export async function POST(req: Request) {
             data.id,
             {
               expand: ["line_items.data.price.product"],
+            },
+            {
+              stripeAccount: event.account,
             }
           );
 
@@ -79,12 +90,27 @@ export async function POST(req: Request) {
               collection: "orders",
               data: {
                 stripeCheckoutSessionId: data.id,
+                stripeAccountId: event.account,
                 user: user.id,
                 book: product.metadata.id,
                 name: product.metadata.name,
               },
             });
           }
+          break;
+        case "account.updated":
+          const data = event.data.object as Stripe.Account;
+          await payload.update({
+            collection: "tenants",
+            where: {
+              stripeAccountId: {
+                equals: data.id,
+              },
+            },
+            data: {
+              stripeDetailsSubmitted: data.details_submitted,
+            },
+          });
           break;
         default:
           throw new Error(`Unhandled event: ${event.type}`);
