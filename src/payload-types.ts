@@ -218,6 +218,8 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * You must verify your account before creating books
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "books".
  */
@@ -266,6 +268,10 @@ export interface Order {
    * Stripe checkout session associated with the book
    */
   stripeCheckoutSessionId: string;
+  /**
+   * Stripe account associated with the book
+   */
+  stripeAccountId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -467,6 +473,7 @@ export interface OrdersSelect<T extends boolean = true> {
   user?: T;
   book?: T;
   stripeCheckoutSessionId?: T;
+  stripeAccountId?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -9,7 +9,7 @@ import { CheckIcon, LinkIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";
-ß;
+
 //import { CartButton } from "../components/cart-button";
 import { Progress } from "@/components/ui/progress";
 import dynamic from "next/dynamic";
