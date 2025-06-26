@@ -1,6 +1,8 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { BookView } from "@/modules/library/ui/views/book-view";
+import { Suspense } from "react";
+import { BookViewSkeleton } from "@/modules/books/ui/views/book-view";
 
 interface Props {
   params: Promise<{
@@ -26,7 +28,9 @@ const Page = async ({ params }: Props) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <BookView bookId={bookId} />
+      <Suspense fallback={<BookViewSkeleton />}>
+        <BookView bookId={bookId} />
+      </Suspense>
     </HydrationBoundary>
   );
 };

@@ -228,7 +228,21 @@ export interface Book {
   tenant?: (string | null) | Tenant;
   name: string;
   author: string;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Price in USD
    */
@@ -240,7 +254,29 @@ export interface Book {
   /**
    * Protected content only visible to customers after purchase. Add book documentation, downloadable files, getting started guides, and bonus materials. Supports Markdown formatting
    */
-  content?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * If checked, this book will not be shown on the public storefront
+   */
+  isPrivate?: boolean | null;
+  /**
+   * If checked, this book will be archived
+   */
+  isArchived?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -438,6 +474,8 @@ export interface BooksSelect<T extends boolean = true> {
   image?: T;
   refundPolicy?: T;
   content?: T;
+  isPrivate?: T;
+  isArchived?: T;
   updatedAt?: T;
   createdAt?: T;
 }

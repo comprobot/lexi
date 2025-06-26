@@ -5,6 +5,7 @@ import { Category, Media, Tenant } from "@/payload-types";
 import { sortValues } from "../search-params";
 import { DEFAULT_LIMIT } from "@/constants";
 import { headers as getHeaders } from "next/headers";
+import { TRPCError } from "@trpc/server";
 
 export const booksRouter = createTRPCRouter({
   getOne: baseProcedure
@@ -25,6 +26,13 @@ export const booksRouter = createTRPCRouter({
           content: false,
         },
       });
+
+      if (book.isArchived) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Book not found",
+        });
+      }
 
       let isPurchased = false;
 
@@ -124,7 +132,9 @@ export const booksRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const where: Where = {
-        price: {},
+        isArchived: {
+          not_equals: true,
+        },
       };
 
       if (input.minPrice && input.maxPrice) {
@@ -146,6 +156,13 @@ export const booksRouter = createTRPCRouter({
       if (input.tenantSlug) {
         where["tenant.slug"] = {
           equals: input.tenantSlug,
+        };
+      } else {
+        // If we are loading books for public storefront (no tenantSlug)
+        // Make sure to not load products set to "isPrivate: true" (using reverse not_equals logic)
+        // There products are exclusively private to the tenant store
+        where["isPrivate"] = {
+          not_equals: true,
         };
       }
 
