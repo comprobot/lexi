@@ -11,10 +11,9 @@ import Link from "next/link";
 
 interface Props {
   disabled?: boolean;
-  data: CustomCategory[];
 }
 
-export const SearchInput = ({ disabled, data }: Props) => {
+export const SearchInput = ({ disabled }: Props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const trpc = useTRPC();

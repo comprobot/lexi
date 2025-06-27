@@ -1,14 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeftIcon } from "lucide-react";
-import { BookList, BookListSkeleton } from "../components/book-list";
-import { Suspense } from "react";
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { ReviewSidebar } from "../components/review-sidebar";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { ArrowLeftIcon } from "lucide-react";
+import Link from "next/link";
+import { Suspense } from "react";
 import { ReviewFormSkeleton } from "../components/review-form";
+import { ReviewSidebar } from "../components/review-sidebar";
 
 interface Props {
   bookId: string;

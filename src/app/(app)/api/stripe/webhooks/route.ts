@@ -1,9 +1,8 @@
-import type { Stripe } from "stripe";
-import { getPayload } from "payload";
+import { stripe } from "@/lib/stripe";
 import config from "@payload-config";
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
-import { ExpandedLineItem } from "@/modules/checkout/type";
+import { getPayload } from "payload";
+import type { Stripe } from "stripe";
 
 export async function POST(req: Request) {
   let event: Stripe.Event;
@@ -37,11 +36,10 @@ export async function POST(req: Request) {
   const payload = await getPayload({ config });
 
   if (permittedEvents.includes(event.type)) {
-    let data;
     try {
       switch (event.type) {
-        case "checkout.session.completed":
-          data = event.data.object as Stripe.Checkout.Session;
+        case "checkout.session.completed": {
+          const data = event.data.object as Stripe.Checkout.Session;
 
           console.log("ACCOUNT: ", {
             account: event.account,
@@ -98,7 +96,8 @@ export async function POST(req: Request) {
             });
           }
           break;
-        case "account.updated":
+        }
+        case "account.updated": {
           const data = event.data.object as Stripe.Account;
           await payload.update({
             collection: "tenants",
@@ -112,6 +111,7 @@ export async function POST(req: Request) {
             },
           });
           break;
+        }
         default:
           throw new Error(`Unhandled event: ${event.type}`);
       }

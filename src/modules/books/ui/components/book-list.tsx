@@ -1,16 +1,13 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { DEFAULT_LIMIT } from "@/constants";
+import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
-import {
-  useSuspenseInfiniteQuery,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { InboxIcon } from "lucide-react";
 import { useBookFilters } from "../../hooks/use-book-filters";
 import { BookCard, BookCardSkeleton } from "./book-card";
-import { DEFAULT_LIMIT } from "@/constants";
-import { Button } from "@/components/ui/button";
-import { InboxIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface Props {
   category?: string;

@@ -86,12 +86,6 @@ export const booksRouter = createTRPCRouter({
       if (reviews.totalDocs > 0) {
         reviews.docs.forEach((review) => {
           const rating = review.rating;
-        });
-      }
-
-      if (reviews.totalDocs > 0) {
-        reviews.docs.forEach((review) => {
-          const rating = review.rating;
 
           if (rating >= 1 && rating <= 5) {
             ratingDistribution[rating] = (ratingDistribution[rating] || 0) + 1;
