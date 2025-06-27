@@ -10,6 +10,8 @@ interface Props {
   }>;
 }
 
+export const dynamic = "force-dynamic";
+
 const Page = async ({ params }: Props) => {
   const { bookId } = await params;
   const queryClient = getQueryClient();

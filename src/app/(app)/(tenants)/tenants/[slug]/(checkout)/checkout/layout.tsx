@@ -3,8 +3,9 @@ import { Navbar } from "@/modules/checkout/ui/components/navbar";
 
 interface LayoutProps {
   children: React.ReactNode;
-  params: { slug: string }; // Changed from Promise to direct object
+  params: Promise<{ slug: string }>;
 }
+
 const Layout = async ({ children, params }: LayoutProps) => {
   const { slug } = await params;
 

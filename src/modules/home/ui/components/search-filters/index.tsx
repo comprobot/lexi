@@ -36,14 +36,14 @@ export const SearchFilters = () => {
         backgroundColor: activeCategoryColor,
       }}
     >
-      <SearchInput data={data} />
+      <SearchInput />
       <div className="hidden lg:block">
         <Categories data={data} />
       </div>
       <BreadcrumbNavigation
         activeCategory={activeCategory}
         activeCategoryName={activeCategoryName}
-        activeSubcategoryName={activeSubcategory}
+        activeSubcategoryName={activeSubcategoryName}
       />
     </div>
   );
@@ -57,7 +57,7 @@ export const SearchFiltersSkeleton = () => {
         backgroundColor: "#F5F5F5",
       }}
     >
-      <SearchInput disabled data={[]} />
+      <SearchInput disabled />
       <div className="hidden lg:block">
         <div className="h-11" />
       </div>

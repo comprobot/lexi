@@ -1,10 +1,10 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import {
   Form,
@@ -15,20 +15,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { registerSchema } from "@/modules/auth/schemas";
-import z from "zod";
-import Link from "next/link";
-import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { registerSchema } from "@/modules/auth/schemas";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["700"],
-});
+import { toast } from "sonner";
+import z from "zod";
 
 export const SignUpView = () => {
   const router = useRouter();

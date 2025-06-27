@@ -1,12 +1,12 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { TRPCClientErrorLike } from "@trpc/client";
+import { useForm } from "react-hook-form";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import {
   Form,
@@ -17,19 +17,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { loginSchema } from "@/modules/auth/schemas";
-import z from "zod";
 import Link from "next/link";
-import { Poppins } from "next/font/google";
-import { cn } from "@/lib/utils";
+import z from "zod";
 //import { useTRPC } from "@/trpc/client";
-import { useRouter } from "next/navigation";
 import { useTRPC } from "@/trpc/client";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import type { AppRouter } from "@/trpc/routers/_app";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["700"],
-});
+// const poppins = Poppins({
+//   subsets: ["latin"],
+//   weight: ["700"],
+// });
 
 export const SignInView = () => {
   const router = useRouter();
@@ -37,7 +36,7 @@ export const SignInView = () => {
   const queryClient = useQueryClient();
   const { mutate: login, isPending } = useMutation(
     trpc.auth.login.mutationOptions({
-      onError: (error: TRPCClientErrorLike<any>) => {
+      onError: (error: TRPCClientErrorLike<AppRouter>) => {
         toast.error(error.message);
       },
       onSuccess: async () => {
