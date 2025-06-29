@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { NavbarSidebar } from "./navbar-sidebar";
 import { MenuIcon } from "lucide-react";
 import { useState } from "react";
 import { useTRPC } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -47,10 +48,29 @@ const navbarItems = [
 
 export const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
   const session = useQuery(trpc.auth.session.queryOptions());
+
+  const { mutate: logout, isPending } = useMutation(
+    trpc.auth.logout.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
+        toast.success("Logged out successfully");
+        router.push("/");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
+  );
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <nav className="h-20 flex border-b justify-between font-medium bg-white">
@@ -63,6 +83,9 @@ export const Navbar = () => {
         items={navbarItems}
         open={isSidebarOpen}
         onOpenChange={setIsSidebarOpen}
+        isAuthenticated={!!session.data?.user}
+        onLogout={handleLogout}
+        isLoggingOut={isPending}
       />
       <div className="items-center gap-4 hidden lg:flex">
         {navbarItems.map((item) => (
@@ -82,6 +105,13 @@ export const Navbar = () => {
             className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-black text-white hover:bg-pink-400 hover:text-black transition-colors text-lg"
           >
             <Link href="/admin">Dashboard</Link>
+          </Button>
+          <Button
+            onClick={handleLogout}
+            disabled={isPending}
+            className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-red-600 text-white hover:bg-red-500 transition-colors text-lg"
+          >
+            {isPending ? "Logging out..." : "Logout"}
           </Button>
         </div>
       ) : (
