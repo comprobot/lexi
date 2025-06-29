@@ -1,36 +1,316 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lexi - Multi-Tenant E-Commerce Platform
 
-## Getting Started
+A comprehensive multi-tenant e-commerce platform where creators can set up their own storefronts, sell digital products, and get paid through Stripe Connect. Built with Next.js 15, Payload CMS, and modern web technologies.
 
-First, run the development server:
+## 🚀 Key Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### 🏬 **Multi-Tenant Architecture**
+
+- **Vendor Subdomains**: Each creator gets their own subdomain (e.g., `creator.yourdomain.com`)
+- **Custom Storefronts**: Personalized merchant pages with custom branding
+- **Isolated Product Catalogs**: Each tenant manages their own products independently
+
+### 💳 **Payment & Commerce**
+
+- **Stripe Connect Integration**: Seamless payment processing for multiple vendors
+- **Automatic Platform Fees**: Configurable commission system
+- **Secure Checkout**: PCI-compliant payment handling
+- **Digital Product Delivery**: Automated file delivery after purchase
+
+### 📚 **Content Management**
+
+- **Payload CMS Backend**: Powerful headless CMS for content management
+- **Category & Product Filtering**: Advanced search and filtering capabilities
+- **Image Upload Support**: Integrated media management
+- **Rich Content Editing**: WYSIWYG editor for product descriptions
+
+### 👤 **User Experience**
+
+- **Personal Libraries**: Users can access their purchased products
+- **Product Reviews & Ratings**: Community-driven product feedback
+- **Advanced Search**: Multi-faceted search functionality
+- **Responsive Design**: Mobile-first responsive interface
+
+### 🛡️ **Security & Access Control**
+
+- **Role-Based Access Control (RBAC)**: Granular permission system
+- **Authentication System**: Secure user registration and login
+- **Admin Dashboard**: Platform administration interface
+- **Merchant Dashboard**: Vendor management tools
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15 (App Router)
+- **Styling**: TailwindCSS V4 + ShadcnUI Components
+- **Backend**: Payload CMS
+- **Database**: MongoDB (configurable)
+- **Payments**: Stripe Connect
+- **Type Safety**: TypeScript
+- **State Management**: Zustand
+- **API Layer**: tRPC
+- **Deployment**: Vercel (recommended)
+
+## 📁 Project Structure
+
+```
+lexi/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (app)/             # Main application routes
+│   │   │   ├── (auth)/        # Authentication pages
+│   │   │   ├── (home)/        # Public homepage & categories
+│   │   │   ├── (library)/     # User library pages
+│   │   │   └── (tenants)/     # Multi-tenant storefront pages
+│   │   ├── (payload)/         # Payload CMS admin
+│   │   └── api/               # API routes (tRPC, Stripe webhooks)
+│   │
+│   ├── collections/           # Payload CMS collections
+│   │   ├── Books.ts           # Digital products schema
+│   │   ├── Categories.ts      # Product categories
+│   │   ├── Orders.ts          # Order management
+│   │   ├── Reviews.ts         # Product reviews
+│   │   ├── Tenants.ts         # Multi-tenant configuration
+│   │   └── Users.ts           # User management
+│   │
+│   ├── modules/               # Feature modules
+│   │   ├── auth/              # Authentication logic
+│   │   ├── books/             # Product management
+│   │   ├── checkout/          # Shopping cart & checkout
+│   │   ├── home/              # Homepage components
+│   │   ├── library/           # User library
+│   │   ├── reviews/           # Review system
+│   │   └── tenants/           # Multi-tenant logic
+│   │
+│   ├── components/ui/         # Reusable UI components
+│   ├── lib/                   # Utility functions
+│   └── trpc/                  # tRPC configuration
+│
+├── public/                    # Static assets
+└── media/                     # Uploaded media files
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚦 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+
+- Bun (recommended for faster installs and builds) or npm/yarn/pnpm
+- MongoDB database
+- Stripe account (for payments)
 
-## Learn More
+### 1. Installation
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd lexi
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Install dependencies (Bun recommended)
+bun install
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Alternative package managers
+# npm install
+# yarn install
+# pnpm install
+```
 
-## Deploy on Vercel
+### 2. Environment Setup
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Create a `.env.local` file in the root directory:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+# Database
+DATABASE_URI=mongodb://localhost:27017/lexi
+
+# Payload CMS
+PAYLOAD_SECRET=your-payload-secret-key
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# App Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_ROOT_DOMAIN=localhost:3000
+NEXT_PUBLIC_ENABLE_SUBDOMAIN_ROUTING=false
+
+# File Storage (Vercel Blob)
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
+
+# Development
+NODE_ENV=development
+```
+
+### 3. Environment Variables Explained
+
+- **DATABASE_URI**: MongoDB connection string. Use a local MongoDB instance or MongoDB Atlas
+- **PAYLOAD_SECRET**: A secure random string used by Payload CMS for JWT tokens
+- **STRIPE_SECRET_KEY**: Your Stripe secret key (use test key for development)
+- **STRIPE_WEBHOOK_SECRET**: Webhook endpoint secret from your Stripe dashboard
+- **NEXT_PUBLIC_APP_URL**: The base URL of your application (includes protocol)
+- **NEXT_PUBLIC_ROOT_DOMAIN**: Your root domain for subdomain routing (without protocol)
+- **NEXT_PUBLIC_ENABLE_SUBDOMAIN_ROUTING**: Set to "true" in production for multi-tenant subdomains
+- **BLOB_READ_WRITE_TOKEN**: Vercel Blob storage token for file uploads
+- **NODE_ENV**: Set to "development" for local development, "production" for deployment
+
+### 4. Database Setup
+
+```bash
+# Seed the database with initial data
+bun run db:seed
+
+# Or reset and seed the database completely
+bun run db:reset
+```
+
+### 5. Development Server
+
+```bash
+# Start development server (Bun recommended)
+bun dev
+
+# Alternative package managers
+# npm run dev
+# yarn dev
+# pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see the application.
+
+## 🎯 Core Functionality
+
+### Multi-Tenant Storefronts
+
+Each creator gets their own subdomain with:
+
+- Custom product catalog
+- Branded storefront design
+- Independent inventory management
+- Separate analytics and reporting
+
+### Digital Product Management
+
+- **Upload & Organize**: Easy product upload with rich descriptions
+- **Categories & Tags**: Hierarchical organization system
+- **Pricing Controls**: Flexible pricing options
+- **Inventory Tracking**: Stock management for limited releases
+
+### Stripe Connect Integration
+
+- **Onboarding**: Streamlined merchant onboarding flow
+- **Split Payments**: Automatic platform fee deduction
+- **Payout Management**: Direct payouts to merchant accounts
+- **Webhook Handling**: Real-time payment status updates
+
+### Review System
+
+- **Star Ratings**: 5-star rating system
+- **Written Reviews**: Detailed customer feedback
+- **Review Moderation**: Admin controls for content quality
+- **Aggregate Scores**: Automatic rating calculations
+
+## 🔧 Configuration
+
+### Payload CMS Configuration
+
+The CMS is configured in `src/payload.config.ts` with:
+
+- Custom collections for products, users, orders
+- File upload handling
+- Access control policies
+- Admin interface customization
+
+### Multi-Tenant Setup
+
+Subdomain routing is handled through:
+
+- Next.js middleware for subdomain detection
+- Dynamic tenant resolution
+- Isolated data contexts per tenant
+
+### Stripe Connect Setup
+
+1. Create a Stripe Connect platform account
+2. Configure webhook endpoints
+3. Set up platform fee structure
+4. Implement merchant onboarding flow
+
+## 🚀 Deployment
+
+### Vercel Deployment (Recommended)
+
+1. Connect your repository to Vercel
+2. Configure environment variables
+3. Set up custom domain with wildcard subdomain support
+4. Deploy with automatic CI/CD
+
+### Manual Deployment
+
+```bash
+# Build the application
+bun run build
+
+# Start production server
+bun start
+```
+
+### Domain Configuration
+
+For multi-tenant subdomains:
+
+1. Configure DNS with wildcard subdomain (`*.yourdomain.com`)
+2. Set up SSL certificates for subdomains
+3. Update environment variables for production URLs
+
+## 📊 Admin Features
+
+### Platform Administration
+
+- User management and role assignment
+- Platform-wide analytics and reporting
+- Content moderation tools
+- System configuration
+
+### Merchant Dashboard
+
+- Product management interface
+- Order tracking and fulfillment
+- Revenue analytics
+- Customer communication tools
+
+## 🔒 Security Features
+
+- **Role-Based Access Control**: Granular permissions system
+- **Secure File Handling**: Protected media uploads
+- **Payment Security**: PCI-compliant payment processing
+- **Data Validation**: Comprehensive input sanitization
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support and questions:
+
+- Create an issue in the repository
+- Check the documentation
+- Review the code examples in the modules
+
+## 🎉 Acknowledgments
+
+Built with modern web technologies:
+
+- [Next.js](https://nextjs.org/) - React framework
+- [Payload CMS](https://payloadcms.com/) - Headless CMS
+- [Stripe](https://stripe.com/) - Payment processing
+- [TailwindCSS](https://tailwindcss.com/) - Utility-first CSS
+- [ShadcnUI](https://ui.shadcn.com/) - Component library

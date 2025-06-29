@@ -148,6 +148,62 @@ const seed = async () => {
     },
   });
 
+  // Create tenant 1
+  const tenant1Account = await stripe.accounts.create({});
+  const tenant1 = await payload.create({
+    collection: "tenants",
+    data: {
+      name: "tenant1",
+      slug: "tenant1",
+      stripeAccountId: tenant1Account.id,
+    },
+  });
+
+  // Create tenant 1 user
+  await payload.create({
+    collection: "users",
+    data: {
+      email: "tenant1@demo.com",
+      password: "1234567",
+      roles: ["user"],
+      username: "tenant1",
+      tenants: [
+        {
+          tenant: tenant1.id,
+        },
+      ],
+    },
+  });
+
+  // Create tenant 2
+  const tenant2Account = await stripe.accounts.create({});
+  const tenant2 = await payload.create({
+    collection: "tenants",
+    data: {
+      name: "tenant2",
+      slug: "tenant2",
+      stripeAccountId: tenant2Account.id,
+    },
+  });
+
+  // Create tenant 2 user
+  await payload.create({
+    collection: "users",
+    data: {
+      email: "tenant2@demo.com",
+      password: "1234567",
+      roles: ["user"],
+      username: "tenant2",
+      tenants: [
+        {
+          tenant: tenant2.id,
+        },
+      ],
+    },
+  });
+
+  const createdCategories: Record<string, any> = {};
+
   for (const category of categories) {
     const parentCategory = await payload.create({
       collection: "categories",
@@ -159,8 +215,10 @@ const seed = async () => {
       },
     });
 
+    createdCategories[category.slug] = parentCategory;
+
     for (const subCategory of category.subcategories || []) {
-      await payload.create({
+      const subCat = await payload.create({
         collection: "categories",
         data: {
           name: subCategory.name,
@@ -168,8 +226,226 @@ const seed = async () => {
           parent: parentCategory.id,
         },
       });
+      createdCategories[subCategory.slug] = subCat;
     }
   }
+
+  // Create 3 books for tenant1 in different categories
+  await payload.create({
+    collection: "books",
+    data: {
+      name: "The Name of the Wind",
+      author: "Patrick Rothfuss",
+      description: {
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "The riveting first-person narrative of a young man who grows to be the most notorious magician his world has ever seen. From his childhood in a troupe of traveling players, to years spent as a near-feral orphan in a crime-riddled city, to his daringly brazen yet successful bid to enter a legendary school of magic, The Name of the Wind is a masterpiece of telling a story.",
+                  type: "text",
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      },
+      price: 16.99,
+      category: createdCategories["fantasy"].id,
+      refundPolicy: "30-day",
+      tenant: tenant1.id,
+      content: {
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "Welcome to the Kingkiller Chronicle series! This digital edition includes bonus materials and author notes.",
+                  type: "text",
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      },
+      isPrivate: false,
+      isArchived: false,
+    },
+  });
+
+  await payload.create({
+    collection: "books",
+    data: {
+      name: "Atomic Habits",
+      author: "James Clear",
+      description: {
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "No matter your goals, Atomic Habits offers a proven framework for improving every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results.",
+                  type: "text",
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      },
+      price: 14.99,
+      category: createdCategories["self-help"].id,
+      refundPolicy: "14-day",
+      tenant: tenant1.id,
+      content: {
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "This edition includes additional worksheets, habit tracking templates, and exclusive video content from the author.",
+                  type: "text",
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      },
+      isPrivate: false,
+      isArchived: false,
+    },
+  });
+
+  await payload.create({
+    collection: "books",
+    data: {
+      name: "Clean Code: A Handbook of Agile Software Craftsmanship",
+      author: "Robert C. Martin",
+      description: {
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "Even bad code can function. But if code isn't clean, it can bring a development organization to its knees. Every year, countless hours and significant resources are lost because of poorly written code. But it doesn't have to be that way. This book will show you how to write good code and how to transform bad code into good code.",
+                  type: "text",
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      },
+      price: 39.99,
+      category: createdCategories["computing"].id,
+      refundPolicy: "30-day",
+      tenant: tenant1.id,
+      content: {
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "This digital edition includes code examples, exercises, and supplementary materials to help you master clean coding principles.",
+                  type: "text",
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      },
+      isPrivate: false,
+      isArchived: false,
+    },
+  });
 };
 
 try {
