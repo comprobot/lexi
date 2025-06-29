@@ -109,10 +109,14 @@ export const libraryRouter = createTRPCRouter({
             reviewRating:
               reviewsData.docs.length === 0
                 ? 0
-                : reviewsData.docs.reduce(
-                    (acc, review) => acc + review.rating,
-                    0
-                  ) / reviewsData.totalDocs,
+                : Math.round(
+                    (reviewsData.docs.reduce(
+                      (acc, review) => acc + review.rating,
+                      0
+                    ) /
+                      reviewsData.totalDocs) *
+                      10
+                  ) / 10,
           };
         })
       );
