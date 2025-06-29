@@ -7,8 +7,8 @@ export const Footer = () => {
     <footer className="flex flex-col border-t font-medium p-6 bg-white">
       <div className="flex items-center justify-center mb-4">
         <p className="text-center text-gray-700 italic text-lg">
-          "Lexi – the protector of humankind through reading books and
-          preserving the value of books."
+          &ldquo;Lexi – the protector of humankind through reading books and
+          preserving the value of books.&rdquo;
         </p>
       </div>
       <div className="flex items-center justify-center gap-4 mb-4">
@@ -32,7 +32,7 @@ export const Footer = () => {
       </div>
       <div className="flex items-center justify-center">
         <p className="text-gray-500">
-          &copy; {currentYear} {"Hien (Hanni) Dinh"}. All rights reserved.
+          &copy; {currentYear} Hien (Hanni) Dinh. All rights reserved.
         </p>
       </div>
     </footer>
