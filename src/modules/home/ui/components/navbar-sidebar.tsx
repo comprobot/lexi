@@ -1,3 +1,5 @@
+"use client";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -5,6 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface NavbarItem {
@@ -16,9 +19,19 @@ interface Props {
   items: NavbarItem[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isAuthenticated?: boolean;
+  onLogout?: () => void;
+  isLoggingOut?: boolean;
 }
 
-export const NavbarSidebar = ({ items, open, onOpenChange }: Props) => {
+export const NavbarSidebar = ({
+  items,
+  open,
+  onOpenChange,
+  isAuthenticated = false,
+  onLogout,
+  isLoggingOut = false,
+}: Props) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="p-0 transition-none">
@@ -40,20 +53,48 @@ export const NavbarSidebar = ({ items, open, onOpenChange }: Props) => {
             </Link>
           ))}
           <div className="border-t">
-            <Link
-              href="/sign-in"
-              className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center
-                  text-base font-medium"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/sign-up"
-              className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center
-                  text-base font-medium"
-            >
-              Start selling
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href="/admin"
+                  className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center
+                      text-base font-medium"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Dashboard
+                </Link>
+                <Button
+                  onClick={() => {
+                    onLogout?.();
+                    onOpenChange(false);
+                  }}
+                  disabled={isLoggingOut}
+                  className="w-full text-left p-4 hover:bg-red-500 hover:text-white flex items-center
+                      text-base font-medium bg-transparent text-black border-0 rounded-none justify-start"
+                >
+                  {isLoggingOut ? "Logging out..." : "Logout"}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/sign-in"
+                  className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center
+                      text-base font-medium"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center
+                      text-base font-medium"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Start selling
+                </Link>
+              </>
+            )}
           </div>
         </ScrollArea>
       </SheetContent>
