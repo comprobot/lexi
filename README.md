@@ -2,6 +2,122 @@
 
 A comprehensive multi-tenant e-commerce platform where creators can set up their own storefronts, sell digital products, and get paid through Stripe Connect. Built with Next.js 15, Payload CMS, and modern web technologies.
 
+## 🏗️ Multi-Tenant Architecture
+
+### **How It Works**
+
+This platform uses a **shared database with tenant isolation** approach, not separate databases per tenant:
+
+```
+📊 Single MongoDB Database
+├── 👥 Users Collection (shared)
+├── 🏪 Tenants Collection (shared)
+├── 📚 Books Collection (tenant-filtered)
+├── 🖼️ Media Collection (tenant-filtered)
+├── 📝 Orders Collection (tenant-filtered)
+└── ⭐ Reviews Collection (tenant-filtered)
+```
+
+### **Architecture Components**
+
+**✅ Single Frontend + Single Backend + Single Database**
+
+- One Next.js application serves all tenants
+- One PayloadCMS backend handles all data
+- One MongoDB database stores everything
+
+**🔒 Tenant Isolation Through Data Fields**
+Instead of separate databases, each tenant-specific record includes a `tenant` field:
+
+```typescript
+// Example book record
+{
+  id: "book123",
+  name: "My Awesome Book",
+  price: 29.99,
+  tenant: "creator-store-id", // 👈 Links to specific tenant
+  // ... other fields
+}
+```
+
+**🎭 PayloadCMS Multi-Tenant Plugin**
+The `@payloadcms/plugin-multi-tenant` plugin automatically:
+
+- Adds `tenant` fields to specified collections
+- Filters queries to show only current tenant's data
+- Handles access control based on user-tenant relationships
+
+```typescript
+// In payload.config.ts
+multiTenantPlugin<Config>({
+  collections: {
+    books: {}, // Tenant-specific
+    media: {}, // Tenant-specific
+  },
+});
+```
+
+**🌐 Subdomain Routing**
+Middleware handles subdomain routing seamlessly:
+
+- `creator1.yourdomain.com` → Shows only Creator1's products
+- `creator2.yourdomain.com` → Shows only Creator2's products
+- Same codebase, different data context!
+
+```typescript
+// middleware.ts - Extracts tenant from subdomain
+if (hostname.endsWith(`.${rootDomain}`)) {
+  const tenantSlug = hostname.replace(`.${rootDomain}`, "");
+  return NextResponse.rewrite(
+    new URL(`/tenants/${tenantSlug}${url.pathname}`, req.url)
+  );
+}
+```
+
+### **Data Filtering Process**
+
+When someone visits `john.yourdomain.com`:
+
+1. **Middleware** extracts "john" from subdomain
+2. **Database Query** finds tenant where `slug = "john"`
+3. **PayloadCMS Plugin** automatically filters all queries:
+   ```typescript
+   // Transforms: "Find all books"
+   // Into: "Find all books WHERE tenant = 'john-tenant-id'"
+   ```
+
+### **User-Tenant Relationships**
+
+Users can be associated with multiple tenants:
+
+```typescript
+// User record structure
+{
+  id: "user123",
+  email: "john@example.com",
+  tenants: [
+    { tenant: "john-store-id" }  // User owns this store
+  ]
+}
+```
+
+### **Benefits of This Approach**
+
+- **💰 Cost Effective**: Single database to maintain
+- **🔧 Simple Infrastructure**: No per-tenant database provisioning
+- **📈 Easy Scaling**: Add tenants without new databases
+- **🤝 Resource Sharing**: Categories/tags shared across tenants
+- **📊 Platform Analytics**: Easy cross-tenant reporting
+
+### **Security & Data Isolation**
+
+- PayloadCMS plugin ensures complete tenant data separation
+- Access control prevents unauthorized cross-tenant access
+- Super admins can access all tenant data when needed
+- Regular users only see their own tenant's data
+
+This **"shared database, shared schema"** model is the most efficient approach for SaaS multi-tenancy!
+
 ## 🚀 Key Features
 
 ### 🏬 **Multi-Tenant Architecture**
