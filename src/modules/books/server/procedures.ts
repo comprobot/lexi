@@ -205,6 +205,12 @@ export const booksRouter = createTRPCRouter({
         };
       }
 
+      if (input.search) {
+        where["name"] = {
+          like: input.search,
+        };
+      }
+
       let sort: Sort = "-createdAt";
       if (input.sort === "curated") {
         sort = "-createdAt";
@@ -251,12 +257,6 @@ export const booksRouter = createTRPCRouter({
           };
         })
       );
-
-      if (input.search) {
-        where["name"] = {
-          like: input.search,
-        };
-      }
 
       return {
         ...data,

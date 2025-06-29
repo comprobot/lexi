@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { BookFilters } from "../components/book-filters";
-import { BookListSkeleton, BookList } from "../components/book-list";
+import { BookList, BookListSkeleton } from "../components/book-list";
 import { BookSort } from "../components/book-sort";
 
 interface Props {

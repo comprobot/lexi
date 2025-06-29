@@ -1,16 +1,18 @@
 "use client";
 
+import { useBookFilters } from "@/modules/books/hooks/use-book-filters";
+import { DEFAULT_BG_COLOR } from "@/modules/home/constants";
 import { useTRPC } from "@/trpc/client";
-import { Categories } from "./categories";
-import { SearchInput } from "./search-input";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { DEFAULT_BG_COLOR } from "@/modules/home/constants";
 import { BreadcrumbNavigation } from "./breadcrumbs-navigation";
+import { Categories } from "./categories";
+import { SearchInput } from "./search-input";
 
 export const SearchFilters = () => {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
+  const [filters, setFilters] = useBookFilters();
 
   const params = useParams();
   const categoryParam = params.category as string | undefined;
@@ -36,7 +38,11 @@ export const SearchFilters = () => {
         backgroundColor: activeCategoryColor,
       }}
     >
-      <SearchInput />
+      <SearchInput
+        defaultValue={filters.search}
+        onChange={(value) => setFilters({ search: value })}
+      />
+
       <div className="hidden lg:block">
         <Categories data={data} />
       </div>
